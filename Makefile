@@ -36,6 +36,6 @@ deps:
 
 sync.s3: deps
 	@echo "make: Processing make sync"
-	@bash pull-salt-repos.sh
-	@bash prep-salt-repos.sh
-	@bash push-salt-repos.sh
+	@bash bin/pull-salt-repos.sh
+	@bash bin/prep-salt-repos.sh
+	@bash bin/push-salt-repos.sh
