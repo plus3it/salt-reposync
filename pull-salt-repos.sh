@@ -46,7 +46,7 @@ log()
     then
         # Log message is $1
         logger -i -t "${__SCRIPTNAME}" -s -- "$1" 2> /dev/console
-        echo "$1"
+        echo "${__SCRIPTNAME}: $1"
     else
         # Log message is stdin
         while IFS= read -r IN
