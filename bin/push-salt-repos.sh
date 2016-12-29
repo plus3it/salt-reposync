@@ -70,8 +70,8 @@ lastfull="$(
     find ${ARCHIVE_DIR} -type f | \
     grep -i -e "${__PROJECTNAME}-yum-full-.*\.zip" | \
     sort -r | \
-    head -1)"
-if [[ -n "${lastfull}" ]]
+    head -1 || echo UNDEF)"
+if [[ "${lastfull}" != "UNDEF" ]]
 then
     zip -r "${lastfull}" . -DF \
         --out "./archives/${delta_zip}" \
