@@ -61,3 +61,17 @@ be located in the S3 bucket at the path "_linux/saltstack/salt_".
 -   `REPOSYNC_STAGING_DIR`
     -   **(Optional)** Target directory for rsync. Defaults to
     "`/tmp/salt-reposync`".
+
+## CloudFormation
+
+This project also provides a CloudFormation template that can be used to
+execute salt-reposync. The template requires an IAM instance role with the
+necessary permissions to the S3 bucket, as described in the **Prerequisites**
+section.
+
+In addition, the AMI must have the `aws` CLI utility pre-installed and in the
+PATH of the root user (the context in which userdata executes). The Amazon
+Linux AMIs all meet this requirement, but any AMI configured similarly may also
+be used.
+
+-   `salt-reposync.template.json`

@@ -26,6 +26,7 @@ __PROJECTNAME="salt-reposync"
 __SCRIPTNAME="pull-salt-repos.sh"
 
 set -eu
+set -o pipefail
 
 # User vars
 HTTP_URL="${REPOSYNC_HTTP_URL}"
