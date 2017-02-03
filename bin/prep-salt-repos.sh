@@ -86,6 +86,8 @@ print_repo_file() {
     printf "[%s]\n" "${name}"
     printf "name=%s\n" "${name}"
     printf "baseurl=%s\n" "${baseurl}"
+    printf "failovermethod=priority\n"
+    printf "priority=10"
     printf "gpgcheck=1\n"
     printf "gpgkey=%s\n" "${gpgkey}"
     printf "enabled=1\n"
