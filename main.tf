@@ -70,6 +70,16 @@ data "aws_iam_policy_document" "role" {
       "arn:${data.aws_partition.current.partition}:s3:::${local.bucket}/${local.key}/*",
     ]
   }
+
+  statement {
+    actions = [
+      "s3:ListBucket"
+    ]
+
+    resources = [
+      "arn:${data.aws_partition.current.partition}:s3:::${local.bucket}",
+    ]
+  }
 }
 
 resource "aws_iam_role" "this" {
