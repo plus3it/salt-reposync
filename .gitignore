@@ -1,3 +1,11 @@
+# Terraform files
+.terraform
+terraform.tfstate.d
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
