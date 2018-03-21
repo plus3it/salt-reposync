@@ -99,7 +99,7 @@ log "${__SCRIPTNAME} starting!"
 
 # Make dirs
 log "Creating directory ${YUM_FILE_DIR}"
-mkdir -p "${YUM_FILE_DIR}"
+mkdir -p "${YUM_FILE_DIR}/${SALT_VERSION}"
 
 # Create repo files
 log "Creating yum repo files"
@@ -107,7 +107,8 @@ for repo in "${REPOS[@]}"; do
     repo_name="REPO_NAME_${repo}"
     repo_baseurl="REPO_BASEURL_${repo}"
     repo_gpgkey="REPO_GPGKEY_${repo}"
-    print_repo_file "${!repo_name}" "${!repo_baseurl}" "${!repo_gpgkey}" \
+    print_repo_file "${!repo_name}" "${!repo_baseurl}" "${!repo_gpgkey}" | tee \
+        "${YUM_FILE_DIR}/${SALT_VERSION}/${!repo_name}.repo" \
         > "${YUM_FILE_DIR}/${!repo_name}.repo"
 done
 
