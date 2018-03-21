@@ -25,6 +25,7 @@ set -o pipefail
 # User vars
 HTTP_URL="${REPOSYNC_HTTP_URL}"
 STAGING_DIR="${REPOSYNC_STAGING_DIR:-/tmp/${__PROJECTNAME}}"
+CREATE_ARCHIVE="${REPOSYNC_ARCHIVE:-true}"
 
 # Internal vars
 HTTP_PATH="$(echo ${HTTP_URL} | grep / | cut -d/ -f4-)"
@@ -53,37 +54,40 @@ log()
 # Begin work
 log "${__SCRIPTNAME} starting!"
 
-# Make dirs
-log "Creating directory ${ARCHIVE_DIR}"
-mkdir -p "${ARCHIVE_DIR}"
-
-# Retrieving archives
-log "Retrieving zip archives"
-aws s3 sync "s3://${HTTP_PATH}/archives" "${ARCHIVE_DIR}/" 2>&1 | log
-
-# Create a delta zip archive, comparing new files to the last full zip archive
-log "Creating a delta zip archive"
-cd "${REPO_DIR}"
-datestamp=$(date -u +"%Y%m%d")
-delta_zip="${__PROJECTNAME}-yum-delta-${datestamp}.zip"
-lastfull="$(
-    find ${ARCHIVE_DIR} -type f | \
-    grep -i -e "${__PROJECTNAME}-yum-full-.*\.zip" | \
-    sort -r | \
-    head -1 || echo UNDEF)"
-if [[ "${lastfull}" != "UNDEF" ]]
+if [[ "${CREATE_ARCHIVE}" = "true" ]]
 then
-    zip -r "${lastfull}" . -DF \
-        --out "./archives/${delta_zip}" \
-        -x "archives*" 2>&1 | log
-fi
+    # Make archive dirs
+    log "Creating directory ${ARCHIVE_DIR}"
+    mkdir -p "${ARCHIVE_DIR}"
 
-# Now create a zip with all the current files
-log "Creating a full zip archive"
-cd "${REPO_DIR}"
-full_zip="${__PROJECTNAME}-yum-full-${datestamp}.zip"
-zip -r "./archives/${full_zip}" . \
-    -x "archives/${__PROJECTNAME}-*.zip" 2>&1 | log
+    # Retrieving archives
+    log "Retrieving zip archives"
+    aws s3 sync "s3://${HTTP_PATH}/archives" "${ARCHIVE_DIR}/" 2>&1 | log
+
+    # Create a delta zip archive, comparing new files to the last full zip archive
+    log "Creating a delta zip archive"
+    cd "${REPO_DIR}"
+    datestamp=$(date -u +"%Y%m%d")
+    delta_zip="${__PROJECTNAME}-yum-delta-${datestamp}.zip"
+    lastfull="$(
+        find ${ARCHIVE_DIR} -type f | \
+        grep -i -e "${__PROJECTNAME}-yum-full-.*\.zip" | \
+        sort -r | \
+        head -1 || echo UNDEF)"
+    if [[ "${lastfull}" != "UNDEF" ]]
+    then
+        zip -r "${lastfull}" . -DF \
+            --out "./archives/${delta_zip}" \
+            -x "archives*" 2>&1 | log
+    fi
+
+    # Now create a zip with all the current files
+    log "Creating a full zip archive"
+    cd "${REPO_DIR}"
+    full_zip="${__PROJECTNAME}-yum-full-${datestamp}.zip"
+    zip -r "./archives/${full_zip}" . \
+        -x "archives/${__PROJECTNAME}-*.zip" 2>&1 | log
+fi
 
 # Push salt repos
 log "Pushing salt repos to ${HTTP_URL}"
