@@ -14,24 +14,33 @@ variable "reposync_ref" {
 }
 
 locals {
-  url_parts = "${split("/", var.repo_base)}"
-  bucket    = "${local.url_parts[3]}"
-  key       = "${join("/", slice(local.url_parts, 4, length(local.url_parts)))}"
-  uuid      = "${uuid()}"
+  url_parts      = "${split("/", var.repo_base)}"
+  bucket         = "${local.url_parts[3]}"
+  key            = "${join("/", slice(local.url_parts, 4, length(local.url_parts)))}"
+  skip_repo_sync = "${var.salt_version == ""}"
+  uuid           = "${uuid()}"
 }
 
-data "aws_partition" "current" {}
+data "aws_partition" "current" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+}
 
 data "http" "ip" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+
   # Get local ip for security group ingress
   url = "http://ipv4.icanhazip.com"
 }
 
 data "aws_vpc" "this" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+
   default = "true"
 }
 
 data "aws_ami" "this" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+
   most_recent = true
 
   filter {
@@ -48,6 +57,8 @@ data "aws_ami" "this" {
 }
 
 data "aws_iam_policy_document" "trust" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -59,6 +70,8 @@ data "aws_iam_policy_document" "trust" {
 }
 
 data "aws_iam_policy_document" "role" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+
   statement {
     actions = [
       "s3:DeleteObject",
@@ -73,7 +86,7 @@ data "aws_iam_policy_document" "role" {
 
   statement {
     actions = [
-      "s3:ListBucket"
+      "s3:ListBucket",
     ]
 
     resources = [
@@ -83,32 +96,44 @@ data "aws_iam_policy_document" "role" {
 }
 
 resource "aws_iam_role" "this" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+
   name               = "salt-reposync-${local.uuid}"
   assume_role_policy = "${data.aws_iam_policy_document.trust.json}"
 }
 
 resource "aws_iam_role_policy" "this" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+
   name   = "salt-reposync-${local.uuid}"
   role   = "${aws_iam_role.this.id}"
   policy = "${data.aws_iam_policy_document.role.json}"
 }
 
 resource "aws_iam_instance_profile" "this" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+
   name = "salt-reposync-${local.uuid}"
   role = "${aws_iam_role.this.name}"
 }
 
 resource "tls_private_key" "this" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+
   algorithm = "RSA"
   rsa_bits  = "4096"
 }
 
 resource "aws_key_pair" "this" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+
   key_name   = "salt-reposync-${local.uuid}"
   public_key = "${tls_private_key.this.public_key_openssh}"
 }
 
 resource "aws_security_group" "this" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+
   name   = "salt-reposync-${local.uuid}"
   vpc_id = "${data.aws_vpc.this.id}"
 
@@ -132,6 +157,8 @@ resource "aws_security_group" "this" {
 }
 
 resource "aws_instance" "this" {
+  count = "${local.skip_repo_sync ? 0 : 1}"
+
   ami                    = "${data.aws_ami.this.id}"
   instance_type          = "t2.micro"
   iam_instance_profile   = "${aws_iam_instance_profile.this.name}"
@@ -165,10 +192,10 @@ resource "aws_instance" "this" {
 
 output "public_ip" {
   description = "Public IP of the EC2 instance"
-  value       = "${aws_instance.this.public_ip}"
+  value       = "${join("", aws_instance.this.*.public_ip)}"
 }
 
 output "private_key" {
   description = "Private key for the keypair"
-  value       = "${tls_private_key.this.private_key_pem}"
+  value       = "${join("", tls_private_key.this.*.private_key_pem)}"
 }
