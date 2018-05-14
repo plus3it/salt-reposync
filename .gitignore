@@ -5,6 +5,8 @@ terraform.tfstate.d
 *.tfstate.backup
 *.tfvars
 
+# Additional project exclusions
+.filecache
 
 # Windows image file caches
 Thumbs.db
@@ -49,8 +51,3 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
-
-
-# =========================
-# My local exclusions
-# =========================
