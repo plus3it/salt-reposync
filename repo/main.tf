@@ -1,4 +1,5 @@
 locals {
+  skip_module           = "${var.salt_version == ""}"
   salt_versions         = "${sort(distinct(concat(list(var.salt_version), var.extra_salt_versions)))}"
   salt_versions_include = "${formatlist("--include \"*/%s/**\"", local.salt_versions)}"
 }
@@ -17,6 +18,8 @@ locals {
 }
 
 resource "null_resource" "pull" {
+  count = "${local.skip_module ? 0 : 1}"
+
   provisioner "local-exec" {
     command = "${join(" ", local.rsync_command)}"
   }
@@ -40,6 +43,8 @@ locals {
 }
 
 resource "null_resource" "push" {
+  count = "${local.skip_module ? 0 : 1}"
+
   provisioner "local-exec" {
     command = "${join(" ", local.s3_command)}"
   }
