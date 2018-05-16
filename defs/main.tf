@@ -74,42 +74,42 @@ resource "local_file" "amzn" {
   count = "${local.skip_module ? 0 : length(local.salt_versions)}"
 
   content  = "${data.template_file.amzn.*.rendered[count.index]}"
-  filename = "${var.cache_dir}/${local.salt_versions[count.index]}/salt-reposync-amzn}"
+  filename = "${var.cache_dir}/${local.salt_versions[count.index]}/salt-reposync-amzn.repo"
 }
 
 resource "local_file" "el6" {
   count = "${local.skip_module ? 0 : length(local.salt_versions)}"
 
   content  = "${data.template_file.el6.*.rendered[count.index]}"
-  filename = "${var.cache_dir}/${local.salt_versions[count.index]}/salt-reposync-el6}"
+  filename = "${var.cache_dir}/${local.salt_versions[count.index]}/salt-reposync-el6.repo"
 }
 
 resource "local_file" "el7" {
   count = "${local.skip_module ? 0 : length(local.salt_versions)}"
 
   content  = "${data.template_file.el7.*.rendered[count.index]}"
-  filename = "${var.cache_dir}/${local.salt_versions[count.index]}/salt-reposync-el7}"
+  filename = "${var.cache_dir}/${local.salt_versions[count.index]}/salt-reposync-el7.repo"
 }
 
 resource "local_file" "amzn_default" {
   count = "${local.skip_module ? 0 : 1}"
 
   content  = "${data.template_file.amzn.*.rendered[index(local.salt_versions, var.salt_version)]}"
-  filename = "${var.cache_dir}/salt-reposync-amzn"
+  filename = "${var.cache_dir}/salt-reposync-amzn.repo"
 }
 
 resource "local_file" "el6_default" {
   count = "${local.skip_module ? 0 : 1}"
 
   content  = "${data.template_file.el6.*.rendered[index(local.salt_versions, var.salt_version)]}"
-  filename = "${var.cache_dir}/salt-reposync-el6"
+  filename = "${var.cache_dir}/salt-reposync-el6.repo"
 }
 
 resource "local_file" "el7_default" {
   count = "${local.skip_module ? 0 : 1}"
 
   content  = "${data.template_file.el7.*.rendered[index(local.salt_versions, var.salt_version)]}"
-  filename = "${var.cache_dir}/salt-reposync-el7"
+  filename = "${var.cache_dir}/salt-reposync-el7.repo"
 }
 
 locals {
