@@ -138,6 +138,7 @@ resource "null_resource" "push" {
   }
 
   triggers {
+    repo_prefix   = "${local.repo_prefix}"
     salt_versions = "${join(",", local.salt_versions)}"
     s3_command    = "${join(" ", local.s3_command)}"
   }
