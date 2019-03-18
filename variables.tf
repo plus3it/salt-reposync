@@ -29,7 +29,7 @@ variable "yum_prefix" {
 variable "salt_rsync_url" {
   type        = "string"
   description = "rsync URL to the upstream yum repo"
-  default     = "rsync://repo.saltstack.com/saltstack_pkgrepo_rhel"
+  default     = "rsync://rsync.repo.saltstack.com/saltstack_pkgrepo_rhel"
 }
 
 variable "s3_endpoint" {
