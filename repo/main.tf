@@ -3,6 +3,7 @@ locals {
   salt_versions         = "${sort(distinct(concat(list(var.salt_version), var.extra_salt_versions)))}"
   salt_versions_include = "${formatlist("--include \"*/%s/**\"", local.salt_versions)}"
   cache_dir_python3     = "${var.cache_dir}/python3"
+  cache_dir_python2     = "${var.cache_dir}/python2"
 }
 
 locals {
@@ -18,7 +19,7 @@ locals {
 
   rsync_python2 = "${concat(
     local.rsync_base,
-    list(var.salt_rsync_url, var.cache_dir))
+    list(var.salt_rsync_url, local.cache_dir_python2))
   }"
 
   rsync_python3 = "${concat(

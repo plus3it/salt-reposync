@@ -9,8 +9,8 @@ data "null_data_source" "amzn" {
 
   inputs {
     name    = "salt-reposync-amzn"
-    baseurl = "${local.repo_prefix}/amazon/latest/$basearch/archive/${local.salt_versions[count.index]}"
-    gpgkey  = "${local.repo_prefix}/amazon/latest/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
+    baseurl = "${local.repo_prefix}/python2/amazon/latest/$basearch/archive/${local.salt_versions[count.index]}"
+    gpgkey  = "${local.repo_prefix}/python2/amazon/latest/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
   }
 }
 
@@ -19,8 +19,8 @@ data "null_data_source" "el6" {
 
   inputs {
     name    = "salt-reposync-el6"
-    baseurl = "${local.repo_prefix}/redhat/6/$basearch/archive/${local.salt_versions[count.index]}"
-    gpgkey  = "${local.repo_prefix}/redhat/6/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
+    baseurl = "${local.repo_prefix}/python2/redhat/6/$basearch/archive/${local.salt_versions[count.index]}"
+    gpgkey  = "${local.repo_prefix}/python2/redhat/6/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
   }
 }
 
@@ -29,8 +29,8 @@ data "null_data_source" "el7" {
 
   inputs {
     name    = "salt-reposync-el7"
-    baseurl = "${local.repo_prefix}/redhat/7/$basearch/archive/${local.salt_versions[count.index]}"
-    gpgkey  = "${local.repo_prefix}/redhat/7/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
+    baseurl = "${local.repo_prefix}/python2/redhat/7/$basearch/archive/${local.salt_versions[count.index]}"
+    gpgkey  = "${local.repo_prefix}/python2/redhat/7/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
   }
 }
 
