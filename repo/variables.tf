@@ -18,7 +18,7 @@ variable "repo_prefix" {
 
 variable "salt_rsync_url" {
   type    = "string"
-  default = "rsync://repo.saltstack.com/saltstack_pkgrepo_rhel"
+  default = "rsync://rsync.repo.saltstack.com/saltstack_pkgrepo_rhel"
 }
 
 variable "cache_dir" {
