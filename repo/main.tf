@@ -2,10 +2,12 @@ locals {
   skip_module           = "${var.salt_version == ""}"
   salt_versions         = "${sort(distinct(concat(list(var.salt_version), var.extra_salt_versions)))}"
   salt_versions_include = "${formatlist("--include \"*/%s/**\"", local.salt_versions)}"
+  cache_dir_python3     = "${var.cache_dir}/python3"
+  cache_dir_python2     = "${var.cache_dir}/python2"
 }
 
 locals {
-  rsync_command = [
+  rsync_base = [
     "rsync -vazmH --no-links --numeric-ids --delete --delete-excluded --delete-after",
     "--exclude \"*/SRPMS\"",
     "--exclude \"*/i386*\"",
@@ -13,19 +15,48 @@ locals {
     "--include \"*/\"",
     "${join(" ", local.salt_versions_include)}",
     "--exclude \"*\"",
-    "${var.salt_rsync_url} ${var.cache_dir}",
   ]
+
+  rsync_python2 = "${concat(
+    local.rsync_base,
+    list(var.salt_rsync_url, local.cache_dir_python2))
+  }"
+
+  rsync_python3 = "${concat(
+    local.rsync_base,
+    list(var.salt_python3_rsync_url, local.cache_dir_python3))
+  }"
 }
 
 resource "null_resource" "pull" {
   count = "${local.skip_module ? 0 : 1}"
 
   provisioner "local-exec" {
-    command = "${join(" ", local.rsync_command)}"
+    command = "mkdir -p ${local.cache_dir_python2}"
+  }
+
+  provisioner "local-exec" {
+    command = "${join(" ", local.rsync_python2)}"
   }
 
   triggers {
-    salt_versions = "${join(",", local.salt_versions)}"
+    rsync_python2 = "${join(" ", local.rsync_python2)}"
+  }
+}
+
+resource "null_resource" "pull_python3" {
+  count = "${local.skip_module ? 0 : 1}"
+
+  provisioner "local-exec" {
+    command = "mkdir -p ${local.cache_dir_python3}"
+  }
+
+  provisioner "local-exec" {
+    command = "${join(" ", local.rsync_python3)}"
+  }
+
+  triggers {
+    rsync_python3 = "${join(" ", local.rsync_python3)}"
   }
 }
 
@@ -55,9 +86,13 @@ resource "null_resource" "push" {
   }
 
   triggers {
-    salt_versions = "${join(",", local.salt_versions)}"
+    rsync_python2 = "${join(" ", local.rsync_python2)}"
+    rsync_python3 = "${join(" ", local.rsync_python3)}"
     s3_command    = "${join(" ", local.s3_command)}"
   }
 
-  depends_on = ["null_resource.pull"]
+  depends_on = [
+    "null_resource.pull",
+    "null_resource.pull_python3",
+    ]
 }

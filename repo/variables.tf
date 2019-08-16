@@ -21,6 +21,11 @@ variable "salt_rsync_url" {
   default = "rsync://rsync.repo.saltstack.com/saltstack_pkgrepo_rhel"
 }
 
+variable "salt_python3_rsync_url" {
+  type    = "string"
+  default = "rsync://rsync.repo.saltstack.com/saltstack_pkgrepo_rhel_python3"
+}
+
 variable "cache_dir" {
   type    = "string"
   default = ".filecache"
