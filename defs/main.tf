@@ -174,9 +174,17 @@ resource "null_resource" "push" {
   }
 
   triggers {
-    repo_prefix   = "${local.repo_prefix}"
-    salt_versions = "${join(",", local.salt_versions)}"
-    s3_command    = "${join(" ", local.s3_command)}"
+    repo_prefix                    = "${local.repo_prefix}"
+    salt_versions                  = "${join(",", local.salt_versions)}"
+    s3_command                     = "${join(" ", local.s3_command)}"
+    local_file.amzn                = "${md5(join("", local_file.amzn.*.content))}"
+    local_file.el6                 = "${md5(join("", local_file.el6.*.content))}"
+    local_file.el7                 = "${md5(join("", local_file.el7.*.content))}"
+    local_file.el7_python3         = "${md5(join("", local_file.el7_python3.*.content))}"
+    local_file.amzn_default        = "${md5(join("", local_file.amzn_default.*.content))}"
+    local_file.el6_default         = "${md5(join("", local_file.el6_default.*.content))}"
+    local_file.el7_default         = "${md5(join("", local_file.el7_default.*.content))}"
+    local_file.el7_python3_default = "${md5(join("", local_file.el7_python3_default.*.content))}"
   }
 
   depends_on = [
