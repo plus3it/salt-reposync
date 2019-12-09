@@ -1,7 +1,7 @@
 locals {
   skip_module   = "${var.salt_version == ""}"
   salt_versions = "${sort(distinct(concat(list(var.salt_version), var.extra_salt_versions)))}"
-  repo_prefix   = "${replace("${var.s3_endpoint}/${var.bucket_name}/${var.repo_prefix}", "/[/]$/", "")}"
+  repo_endpoint = "${replace(var.repo_endpoint, "/[/]*$/", "")}/${replace(var.repo_prefix, "/[/]*$/", "")}"
 }
 
 data "null_data_source" "amzn" {
@@ -9,8 +9,8 @@ data "null_data_source" "amzn" {
 
   inputs {
     name    = "salt-reposync-amzn"
-    baseurl = "${local.repo_prefix}/python2/amazon/latest/$basearch/archive/${local.salt_versions[count.index]}"
-    gpgkey  = "${local.repo_prefix}/python2/amazon/latest/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
+    baseurl = "${local.repo_endpoint}/python2/amazon/latest/$basearch/archive/${local.salt_versions[count.index]}"
+    gpgkey  = "${local.repo_endpoint}/python2/amazon/latest/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
   }
 }
 
@@ -19,8 +19,8 @@ data "null_data_source" "el6" {
 
   inputs {
     name    = "salt-reposync-el6"
-    baseurl = "${local.repo_prefix}/python2/redhat/6/$basearch/archive/${local.salt_versions[count.index]}"
-    gpgkey  = "${local.repo_prefix}/python2/redhat/6/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
+    baseurl = "${local.repo_endpoint}/python2/redhat/6/$basearch/archive/${local.salt_versions[count.index]}"
+    gpgkey  = "${local.repo_endpoint}/python2/redhat/6/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
   }
 }
 
@@ -29,8 +29,8 @@ data "null_data_source" "el7" {
 
   inputs {
     name    = "salt-reposync-el7"
-    baseurl = "${local.repo_prefix}/python2/redhat/7/$basearch/archive/${local.salt_versions[count.index]}"
-    gpgkey  = "${local.repo_prefix}/python2/redhat/7/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
+    baseurl = "${local.repo_endpoint}/python2/redhat/7/$basearch/archive/${local.salt_versions[count.index]}"
+    gpgkey  = "${local.repo_endpoint}/python2/redhat/7/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
   }
 }
 
@@ -39,8 +39,8 @@ data "null_data_source" "el7_python3" {
 
   inputs {
     name    = "salt-reposync-el7-python3"
-    baseurl = "${local.repo_prefix}/python3/7/$basearch/archive/${local.salt_versions[count.index]}"
-    gpgkey  = "${local.repo_prefix}/python3/7/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
+    baseurl = "${local.repo_endpoint}/python3/7/$basearch/archive/${local.salt_versions[count.index]}"
+    gpgkey  = "${local.repo_endpoint}/python3/7/$basearch/archive/${local.salt_versions[count.index]}/SALTSTACK-GPG-KEY.pub"
   }
 }
 
@@ -174,7 +174,7 @@ resource "null_resource" "push" {
   }
 
   triggers {
-    repo_prefix                    = "${local.repo_prefix}"
+    repo_endpoint                  = "${local.repo_endpoint}"
     salt_versions                  = "${join(",", local.salt_versions)}"
     s3_command                     = "${join(" ", local.s3_command)}"
     local_file.amzn                = "${md5(join("", local_file.amzn.*.content))}"

@@ -14,6 +14,11 @@ variable "extra_salt_versions" {
   default     = []
 }
 
+variable "repo_endpoint" {
+  type        = "string"
+  description = "HTTP/S endpoint URL that hosts the yum repos; used with the baseurl in the yum .repo definitions"
+}
+
 variable "repo_prefix" {
   type        = "string"
   description = "S3 key where the repos will be mirrored"
@@ -30,12 +35,6 @@ variable "salt_rsync_url" {
   type        = "string"
   description = "rsync URL to the upstream yum repo"
   default     = "rsync://rsync.repo.saltstack.com/saltstack_pkgrepo_rhel"
-}
-
-variable "s3_endpoint" {
-  type        = "string"
-  description = "HTTP/S endpoint for S3"
-  default     = "https://s3.amazonaws.com"
 }
 
 variable "cache_dir" {
