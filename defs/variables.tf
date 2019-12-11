@@ -11,6 +11,10 @@ variable "extra_salt_versions" {
   default = []
 }
 
+variable "repo_endpoint" {
+  type    = "string"
+}
+
 variable "repo_prefix" {
   type    = "string"
   default = ""
@@ -19,11 +23,6 @@ variable "repo_prefix" {
 variable "yum_prefix" {
   type    = "string"
   default = ""
-}
-
-variable "s3_endpoint" {
-  type    = "string"
-  default = "https://s3.amazonaws.com"
 }
 
 variable "cache_dir" {
