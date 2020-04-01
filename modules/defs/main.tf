@@ -1,6 +1,5 @@
 locals {
-  disable       = var.salt_version == ""
-  salt_versions = sort(distinct(concat(list(var.salt_version), var.extra_salt_versions)))
+  salt_versions = sort(var.salt_versions)
   repo_endpoint = "${trimsuffix(var.repo_endpoint, "/")}/${trimsuffix(var.repo_prefix, "/")}"
   yum_prefix    = trimsuffix(var.yum_prefix, "/")
 }
@@ -36,9 +35,7 @@ locals {
 }
 
 resource "aws_s3_bucket_object" "this" {
-  for_each = local.disable ? {} : {
-    for repo_def in local.repo_defs : repo_def.key => repo_def.content
-  }
+  for_each = { for repo_def in local.repo_defs : repo_def.key => repo_def.content }
 
   bucket       = var.bucket_name
   key          = each.key

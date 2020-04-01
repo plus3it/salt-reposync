@@ -3,14 +3,9 @@ variable "bucket_name" {
   description = "S3 bucket where salt repo will be mirrored"
 }
 
-variable "salt_version" {
-  type        = string
-  description = "Salt version that will be mirrored - this will also be the version used in the \"default\" yum repo definition file"
-}
-
-variable "extra_salt_versions" {
+variable "salt_versions" {
   type        = list(string)
-  description = "List of additional salt versions to mirror - these will be in version-specific yum repo definition files"
+  description = "List of salt versions to mirror; will also generate version-specific yum .repo definition files"
   default     = []
 }
 

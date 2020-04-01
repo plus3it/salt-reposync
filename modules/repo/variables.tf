@@ -2,11 +2,7 @@ variable "bucket_name" {
   type = string
 }
 
-variable "salt_version" {
-  type = string
-}
-
-variable "extra_salt_versions" {
+variable "salt_versions" {
   type    = list(string)
   default = []
 }

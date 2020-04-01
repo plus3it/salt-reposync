@@ -1,9 +1,8 @@
 locals {
-  disable               = var.salt_version == ""
-  salt_versions         = sort(distinct(concat(list(var.salt_version), var.extra_salt_versions)))
-  salt_versions_include = formatlist("--filter '+ {amazon,redhat}/{latest,?}/**/archive/%s/**'", local.salt_versions)
-  repo_prefix_python2   = trimprefix("${trimsuffix(var.repo_prefix, "/")}/python2", "/")
-  repo_prefix_python3   = trimprefix("${trimsuffix(var.repo_prefix, "/")}/python3", "/")
+  disable             = length(var.salt_versions) == 0
+  salt_versions       = formatlist("--filter '+ {amazon,redhat}/{latest,?}/**/archive/%s/**'", sort(var.salt_versions))
+  repo_prefix_python2 = trimprefix("${trimsuffix(var.repo_prefix, "/")}/python2", "/")
+  repo_prefix_python3 = trimprefix("${trimsuffix(var.repo_prefix, "/")}/python3", "/")
 }
 
 locals {
@@ -17,7 +16,7 @@ locals {
     "rclone sync",
     "--use-server-modtime --update --fast-list -v",
     "--filter '- **/{i386,i686,SRPMS}/**'",
-    join(" ", local.salt_versions_include),
+    join(" ", local.salt_versions),
     "--filter '- *'",
   ]
 
