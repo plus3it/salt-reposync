@@ -5,8 +5,7 @@ module "sync_repo" {
   salt_version        = var.salt_version
   extra_salt_versions = var.extra_salt_versions
   repo_prefix         = var.repo_prefix
-  salt_rsync_url      = var.salt_rsync_url
-  cache_dir           = "${var.cache_dir}/repo"
+  salt_s3_endpoint    = var.salt_s3_endpoint
 }
 
 module "yum_defs" {
@@ -18,5 +17,4 @@ module "yum_defs" {
   repo_endpoint       = var.repo_endpoint
   repo_prefix         = var.repo_prefix
   yum_prefix          = var.yum_prefix
-  cache_dir           = "${var.cache_dir}/defs"
 }

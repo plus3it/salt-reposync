@@ -21,7 +21,7 @@ variable "repo_endpoint" {
 
 variable "repo_prefix" {
   type        = string
-  description = "S3 key where the repos will be mirrored"
+  description = "S3 key prefix where the repos will be mirrored"
   default     = ""
 }
 
@@ -31,14 +31,8 @@ variable "yum_prefix" {
   default     = ""
 }
 
-variable "salt_rsync_url" {
+variable "salt_s3_endpoint" {
   type        = string
-  description = "rsync URL to the upstream yum repo"
-  default     = "rsync://rsync.repo.saltstack.com/saltstack_pkgrepo_rhel"
-}
-
-variable "cache_dir" {
-  type        = string
-  description = "Local directory used to cache files"
-  default     = ".filecache"
+  description = "S3 endpoint for the upstream salt repo"
+  default     = "https://s3.repo.saltstack.com"
 }
