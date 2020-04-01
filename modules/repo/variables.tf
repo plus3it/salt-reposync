@@ -13,20 +13,10 @@ variable "extra_salt_versions" {
 
 variable "repo_prefix" {
   type    = string
-  default = ""
+  default = "/"
 }
 
-variable "salt_rsync_url" {
+variable "salt_s3_endpoint" {
   type    = string
-  default = "rsync://rsync.repo.saltstack.com/saltstack_pkgrepo_rhel"
-}
-
-variable "salt_python3_rsync_url" {
-  type    = string
-  default = "rsync://rsync.repo.saltstack.com/saltstack_pkgrepo_rhel_python3"
-}
-
-variable "cache_dir" {
-  type    = string
-  default = ".filecache"
+  default = "https://s3.repo.saltstack.com"
 }

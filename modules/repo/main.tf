@@ -1,98 +1,63 @@
 locals {
   disable               = var.salt_version == ""
   salt_versions         = sort(distinct(concat(list(var.salt_version), var.extra_salt_versions)))
-  salt_versions_include = formatlist("--include \"*/%s/**\"", local.salt_versions)
-  cache_dir_python3     = "${var.cache_dir}/python3"
-  cache_dir_python2     = "${var.cache_dir}/python2"
+  salt_versions_include = formatlist("--filter '+ {amazon,redhat}/{latest,?}/**/archive/%s/**'", local.salt_versions)
+  repo_prefix_python2   = trimprefix("${trimsuffix(var.repo_prefix, "/")}/python2", "/")
+  repo_prefix_python3   = trimprefix("${trimsuffix(var.repo_prefix, "/")}/python3", "/")
 }
 
 locals {
-  rsync_base = [
-    "rsync -vazmH --no-links --numeric-ids --delete --delete-excluded --delete-after",
-    "--exclude \"*/SRPMS\"",
-    "--exclude \"*/i386*\"",
-    "--exclude \"redhat/5*\"",
-    "--include \"*/\"",
+  rclone_base = [
+    "RCLONE_CONFIG_SALT_TYPE=s3",
+    "RCLONE_CONFIG_SALT_PROVIDER=Other",
+    "RCLONE_CONFIG_SALT_ENV_AUTH=false",
+    "RCLONE_CONFIG_SALT_ENDPOINT=${var.salt_s3_endpoint}",
+    "RCLONE_CONFIG_S3_TYPE=s3",
+    "RCLONE_CONFIG_S3_ENV_AUTH=true",
+    "rclone sync",
+    "--use-server-modtime --update --fast-list -v",
+    "--filter '- **/{i386,i686,SRPMS}/**'",
     join(" ", local.salt_versions_include),
-    "--exclude \"*\"",
+    "--filter '- *'",
   ]
 
-  rsync_python2 = concat(
-    local.rsync_base,
-    list(var.salt_rsync_url, local.cache_dir_python2)
+  rclone_python2 = concat(
+    local.rclone_base,
+    list(
+      "salt:s3/yum",                                       # rclone source
+      "s3:${var.bucket_name}/${local.repo_prefix_python2}" # rclone target
+    )
   )
 
-  rsync_python3 = concat(
-    local.rsync_base,
-    list(var.salt_python3_rsync_url, local.cache_dir_python3)
+  rclone_python3 = concat(
+    local.rclone_base,
+    list(
+      "salt:s3/py3",                                       # rclone source
+      "s3:${var.bucket_name}/${local.repo_prefix_python3}" # rclone target
+    )
   )
 }
 
-resource "null_resource" "pull" {
+resource "null_resource" "sync_python2" {
   count = local.disable ? 0 : 1
 
   provisioner "local-exec" {
-    command = "mkdir -p ${local.cache_dir_python2}"
-  }
-
-  provisioner "local-exec" {
-    command = join(" ", local.rsync_python2)
+    command = join(" ", local.rclone_python2)
   }
 
   triggers = {
-    rsync_python2 = join(" ", local.rsync_python2)
+    rclone = join(" ", local.rclone_python2)
   }
 }
 
-resource "null_resource" "pull_python3" {
+resource "null_resource" "sync_python3" {
   count = local.disable ? 0 : 1
 
   provisioner "local-exec" {
-    command = "mkdir -p ${local.cache_dir_python3}"
-  }
-
-  provisioner "local-exec" {
-    command = join(" ", local.rsync_python3)
+    command = join(" ", local.rclone_python3)
   }
 
   triggers = {
-    rsync_python3 = join(" ", local.rsync_python3)
+    rclone = join(" ", local.rclone_python3)
   }
-}
-
-locals {
-  s3_command = [
-    "aws s3 sync --delete",
-    var.cache_dir,
-    "s3://${var.bucket_name}/${replace(var.repo_prefix, "/[/]$/", "")}",
-  ]
-
-  s3_command_destroy = [
-    "aws s3 rm --recursive",
-    "s3://${var.bucket_name}/${replace(var.repo_prefix, "/[/]$/", "")}",
-  ]
-}
-
-resource "null_resource" "push" {
-  count = local.disable ? 0 : 1
-
-  provisioner "local-exec" {
-    command = join(" ", local.s3_command)
-  }
-
-  provisioner "local-exec" {
-    command = join(" ", local.s3_command_destroy)
-    when    = destroy
-  }
-
-  triggers = {
-    rsync_python2 = join(" ", local.rsync_python2)
-    rsync_python3 = join(" ", local.rsync_python3)
-    s3_command    = join(" ", local.s3_command)
-  }
-
-  depends_on = [
-    null_resource.pull,
-    null_resource.pull_python3,
-  ]
 }
