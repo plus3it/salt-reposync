@@ -1,9 +1,10 @@
 # Terraform files
+terraform.tfstate
+terraform.tfstate.*
 .terraform
+.terraform.tfstate.*
 terraform.tfstate.d
-*.tfstate
-*.tfstate.backup
-*.tfvars
+.terragrunt-cache
 
 # Additional project exclusions
 .filecache
