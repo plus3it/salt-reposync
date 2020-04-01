@@ -24,8 +24,3 @@ variable "yum_prefix" {
   type    = string
   default = ""
 }
-
-variable "cache_dir" {
-  type    = string
-  default = ".filecache"
-}
