@@ -1,51 +1,41 @@
-language: bash
+dist: xenial
 
-env:
-  global:
-    - AWS_DEFAULT_REGION="us-east-1"
-    - REPO="${TRAVIS_REPO_SLUG#*/}"
-    - OWNER=plus3it
-    - DEPLOY_SLUG=$OWNER/$REPO
+language: node_js
+
+node_js:
+  - "12"
+
+stages:
+  - lint
+  - deploy
 
 jobs:
   include:
-    - stage: test
-      env:
-        - JOB="Terraform Format Check"
-      before_install:
-        - TERRAFORM_VERSION=$(curl -sSL https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version')
-        - TERRAFORM_URL="https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"
-        - echo "TERRAFORM_URL=${TERRAFORM_URL}"
-        - curl -sSL -o terraform.zip "$TERRAFORM_URL"
-        - unzip terraform.zip && rm -f terraform.zip
-        - chmod +x terraform
-        - mkdir -p $HOME/bin
-        - export PATH=$PATH:$HOME/bin
-        - mv terraform $HOME/bin
-        - terraform --version
-      script:
-        - terraform fmt -check=true
+    - stage: lint
+      name: Project Syntax Verification
+      script: make && make docker/run target=lint
     - stage: deploy
-      env:
-        - JOB="Deploy to GitHub Releases"
-        - PRIOR_VERSION=$(git describe --abbrev=0 --tags)
-        - RELEASE_VERSION=$(grep current_version $TRAVIS_BUILD_DIR/.bumpversion.cfg | sed 's/^.*= //')
-        - RELEASE_BODY="* [$REPO v$RELEASE_VERSION changes](https://github.com/$OWNER/$REPO/compare/$PRIOR_VERSION...$RELEASE_VERSION)"
-      script:
-        - skip
+      if: branch = master AND type = push AND repo = plus3it/salt-reposync
+      before_script:
+        - |
+          PRIOR_VERSION=$(git describe --abbrev=0 --tags)
+          RELEASE_VERSION=$(grep current_version $TRAVIS_BUILD_DIR/.bumpversion.cfg | sed 's/^.*= //' )
+          RELEASE_BODY="* [SALT-REPOSYNC v$RELEASE_VERSION CHANGELOG](https://github.com/plus3it/salt-reposync/blob/$RELEASE_VERSION/CHANGELOG.md)"
+          export PRIOR_VERSION RELEASE_VERSION RELEASE_BODY
+      script: skip
       before_deploy:
-        - echo PRIOR_VERSION=$PRIOR_VERSION
-        - echo RELEASE_VERSION=$RELEASE_VERSION
-        - echo RELEASE_BODY=$RELEASE_BODY
+        - |
+          (set -x; git tag -a $RELEASE_VERSION -m $RELEASE_VERSION)
       deploy:
         provider: releases
-        name: $RELEASE_VERSION
-        tag_name: $RELEASE_VERSION
-        body: $RELEASE_BODY
-        draft: false
         api_key:
           secure: ZVwUe5hN5k2gaOzIpWzC6F/go2gemRRzIe3LtMmuoCFWbO20OulJw9kVuq5moqkZuhMqoQ2ep9SE45QhxRVYXZPd1d2E4sYhES/0XPGL91ssl87xFEkHn1F5uYPLNXSp96ALG9RbJbiqdvHiMuE4bn94AJofb9+63Syt7LnbQCMNs14M6c8xtPaUcngTFhimOrQTNmMlkRpjrPEJ8/jE4eQy2JejqpN2jYLRwli7HlCONwLHCMMkNnmPU7W5VihkcJSu016JmsJ/2YGCGA+SGHXJCrGiOoGyLLMSXusMS03D8KXVxbiWgP6apQLn8YlrAuirLg+s3+x1ECPFWR0grCRydDtdCausl1HfcN4+rWm154nYGi900ypd+aWcYQMSarsSmxCpCn5Nngz6IgJwJALlqCbqmLpg8WJXKxfOeNzI19Wsn/f0Vr3jkqTvR7KqTLpEvMKs11PFxb0z9LKCpkexnIadNl7qRR8lY+ilB0+e2ZMlsmuoDGCGdLD6oLoevH0nStmbNzMNMlZ+ClSNPAg74Em0a8vo1rCNhZPG/H9X0jpKlbn1NDXdDvggewHqO7La+E7+K3dxD5d06pHpfsS6vBrrJJVwrRp9eLvKgAF/3Bebc9eVcOBQdhOA+A6/6LpQ7F4l3rNBzJRY0YDbbU+WFQf4z2xmqDgIOnivK18=
+        name: $RELEASE_VERSION
+        body: $RELEASE_BODY
+        tag_name: $RELEASE_VERSION
+        target_commitish: $TRAVIS_COMMIT
+        draft: false
         on:
           branch: master
-          repo: $DEPLOY_SLUG
+          repo: plus3it/salt-reposync
           condition: '"$PRIOR_VERSION" != "$RELEASE_VERSION"'
