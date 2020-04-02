@@ -27,3 +27,25 @@ terraform apply -var bucket_name=<BUCKET> -var salt_version="SALT_VERSION" tfpla
 
 *   `defs` - Templates the yum repo definition files and uses the `aws` utility
     to sync them to the S3 bucket specified by `var.bucket_name`.
+
+<!-- BEGIN TFDOCS -->
+## Providers
+
+No provider.
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:-----:|
+| bucket\_name | S3 bucket where salt repo will be mirrored | `string` | n/a | yes |
+| repo\_endpoint | HTTP/S endpoint URL that hosts the yum repos; used with the baseurl in the yum .repo definitions | `string` | n/a | yes |
+| repo\_prefix | S3 key prefix where the repos will be mirrored | `string` | `""` | no |
+| salt\_s3\_endpoint | S3 endpoint for the upstream salt repo | `string` | `"https://s3.repo.saltstack.com"` | no |
+| salt\_versions | List of salt versions to mirror; will also generate version-specific yum .repo definition files | `list(string)` | `[]` | no |
+| yum\_prefix | S3 key where the yum repo definitions will be placed | `string` | `""` | no |
+
+## Outputs
+
+No output.
+
+<!-- END TFDOCS -->
