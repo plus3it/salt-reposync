@@ -1,4 +1,8 @@
 <!-- BEGIN TFDOCS -->
+## Requirements
+
+No requirements.
+
 ## Providers
 
 | Name | Version |
@@ -8,7 +12,7 @@
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
+|------|-------------|------|---------|:--------:|
 | bucket\_name | n/a | `string` | n/a | yes |
 | repo\_prefix | n/a | `string` | `"/"` | no |
 | salt\_s3\_endpoint | n/a | `string` | `"https://s3.repo.saltstack.com"` | no |

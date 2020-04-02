@@ -26,6 +26,10 @@ terraform apply -var bucket_name=<BUCKET> -var salt_versions='["SALT_VERSION"]' 
     the S3 bucket specified by `var.bucket_name`.
 
 <!-- BEGIN TFDOCS -->
+## Requirements
+
+No requirements.
+
 ## Providers
 
 No provider.
@@ -33,7 +37,7 @@ No provider.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:-----:|
+|------|-------------|------|---------|:--------:|
 | bucket\_name | S3 bucket where salt repo will be mirrored | `string` | n/a | yes |
 | repo\_endpoint | HTTP/S endpoint URL that hosts the yum repos; used with the baseurl in the yum .repo definitions | `string` | n/a | yes |
 | repo\_prefix | S3 key prefix where the repos will be mirrored | `string` | `""` | no |
