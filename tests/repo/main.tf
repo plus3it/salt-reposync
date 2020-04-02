@@ -5,10 +5,9 @@ terraform {
 module "repo" {
   source = "../../modules/repo"
 
-  bucket_name         = local.bucket_name
-  salt_version        = local.salt_version
-  extra_salt_versions = local.extra_salt_versions
-  repo_prefix         = local.repo_prefix
+  bucket_name   = local.bucket_name
+  salt_versions = local.salt_versions
+  repo_prefix   = local.repo_prefix
 }
 
 resource "aws_s3_bucket" "this" {
@@ -17,10 +16,10 @@ resource "aws_s3_bucket" "this" {
 }
 
 locals {
-  bucket_name  = aws_s3_bucket.this.id
-  salt_version = "3000"
+  bucket_name = aws_s3_bucket.this.id
 
-  extra_salt_versions = [
+  salt_versions = [
+    "3000",
     "2019.2.3",
     "2018.3.4",
   ]
