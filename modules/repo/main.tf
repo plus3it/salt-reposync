@@ -1,8 +1,8 @@
 locals {
   disable             = length(var.salt_versions) == 0
   salt_versions       = formatlist("--filter '+ {amazon,redhat}/{latest,?}/**/archive/%s/**'", sort(var.salt_versions))
-  repo_prefix_python2 = trimprefix("${trimsuffix(var.repo_prefix, "/")}/python2", "/")
-  repo_prefix_python3 = trimprefix("${trimsuffix(var.repo_prefix, "/")}/python3", "/")
+  repo_prefix_python2 = "${trim(var.repo_prefix, "/")}/python2"
+  repo_prefix_python3 = "${trim(var.repo_prefix, "/")}/python3"
 }
 
 locals {

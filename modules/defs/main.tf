@@ -1,7 +1,7 @@
 locals {
   salt_versions = sort(var.salt_versions)
-  repo_endpoint = "${trimsuffix(var.repo_endpoint, "/")}/${trimsuffix(var.repo_prefix, "/")}"
-  yum_prefix    = trimsuffix(var.yum_prefix, "/")
+  repo_endpoint = "${trimsuffix(var.repo_endpoint, "/")}/${trim(var.repo_prefix, "/")}"
+  yum_prefix    = trim(var.yum_prefix, "/")
 }
 
 locals {
