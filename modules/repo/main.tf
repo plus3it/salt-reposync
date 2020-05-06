@@ -14,7 +14,7 @@ locals {
     "RCLONE_CONFIG_S3_TYPE=s3",
     "RCLONE_CONFIG_S3_ENV_AUTH=true",
     "rclone sync",
-    "--use-server-modtime --update --fast-list -v",
+    "--delete-excluded --use-server-modtime --update --fast-list -v",
     "--filter '- **/{i386,i686,SRPMS}/**'",
     join(" ", local.salt_versions),
     "--filter '- *'",
