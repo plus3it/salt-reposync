@@ -14,9 +14,7 @@ No requirements.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | bucket\_name | n/a | `string` | n/a | yes |
-| repo\_prefix | n/a | `string` | `"/"` | no |
-| salt\_s3\_endpoint | n/a | `string` | `"https://s3.repo.saltstack.com"` | no |
-| salt\_versions | n/a | `list(string)` | `[]` | no |
+| repos | n/a | <pre>list(object({<br>    repo_prefix      = string<br>    salt_s3_endpoint = string<br>    salt_versions    = list(string)<br>  }))</pre> | `[]` | no |
 
 ## Outputs
 

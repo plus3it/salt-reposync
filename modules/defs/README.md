@@ -15,9 +15,7 @@ No requirements.
 |------|-------------|------|---------|:--------:|
 | bucket\_name | n/a | `string` | n/a | yes |
 | repo\_endpoint | n/a | `string` | n/a | yes |
-| repo\_prefix | n/a | `string` | `""` | no |
-| salt\_versions | n/a | `list(string)` | `[]` | no |
-| yum\_prefix | n/a | `string` | `""` | no |
+| repos | n/a | <pre>list(object({<br>    repo_prefix   = string<br>    salt_versions = list(string)<br>    yum_prefix    = string<br>  }))</pre> | `[]` | no |
 
 ## Outputs
 

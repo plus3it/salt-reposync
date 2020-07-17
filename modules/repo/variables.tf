@@ -2,17 +2,11 @@ variable "bucket_name" {
   type = string
 }
 
-variable "salt_versions" {
-  type    = list(string)
+variable "repos" {
+  type = list(object({
+    repo_prefix      = string
+    salt_s3_endpoint = string
+    salt_versions    = list(string)
+  }))
   default = []
-}
-
-variable "repo_prefix" {
-  type    = string
-  default = "/"
-}
-
-variable "salt_s3_endpoint" {
-  type    = string
-  default = "https://s3.repo.saltstack.com"
 }
