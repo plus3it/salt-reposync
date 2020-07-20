@@ -6,6 +6,6 @@ module "main" {
   source = "../.."
 
   bucket_name   = "foo"
-  salt_versions = []
   repo_endpoint = "bar"
+  repos         = []
 }
