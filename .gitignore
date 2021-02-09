@@ -11,3 +11,9 @@ terraform.tfstate.*
 # ci
 tardigrade-ci
 .tardigrade-ci
+
+# terraform lock file
+.terraform.lock.hcl
+
+# terratest packaging
+tests/go.*
