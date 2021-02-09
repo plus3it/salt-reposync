@@ -7,3 +7,4 @@ gpgcheck=1
 gpgkey=${gpgkey}
 enabled=1
 skip_if_unavailable=1
+repo_gpgcheck=0
