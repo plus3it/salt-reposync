@@ -33,11 +33,10 @@ locals {
   salt_s3_endpoint_archive = "https://s3.archive.repo.saltstack.com"
 
   salt_versions = [
-    "3000.3",
-    "2019.2.5",
+    "3002",
   ]
 
   salt_versions_archive = [
-    "2018.3.4",
+    "2019.2.8",
   ]
 }
