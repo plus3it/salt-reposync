@@ -34,11 +34,10 @@ locals {
   yum_prefix          = "defs/"
 
   salt_versions = [
-    "3000",
-    "2019.2.3",
+    "3002",
   ]
 
   salt_versions_archive = [
-    "2018.3.4",
+    "2019.2.8",
   ]
 }
