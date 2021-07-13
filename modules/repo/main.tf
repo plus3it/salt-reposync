@@ -25,18 +25,18 @@ locals {
 
   rclone_python2 = concat(
     local.rclone_base,
-    list(
+    [
       "salt:s3/yum",             # rclone source
       "s3:${var.bucket_name}/%s" # rclone target, %s is repo.repo_prefix_python2
-    )
+    ]
   )
 
   rclone_python3 = concat(
     local.rclone_base,
-    list(
+    [
       "salt:s3/py3",             # rclone source
       "s3:${var.bucket_name}/%s" # rclone target, %s is repo.repo_prefix_python3
-    )
+    ]
   )
 }
 
