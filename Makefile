@@ -1,8 +1,6 @@
 SHELL := /bin/bash
 
-export TIMEOUT=60m
-
--include $(shell curl -sSL -o .tardigrade-ci "https://raw.githubusercontent.com/plus3it/tardigrade-ci/master/bootstrap/Makefile.bootstrap"; echo .tardigrade-ci)
+include $(shell test -f .tardigrade-ci || curl -sSL -o .tardigrade-ci "https://raw.githubusercontent.com/plus3it/tardigrade-ci/master/bootstrap/Makefile.bootstrap"; echo .tardigrade-ci)
 
 ## Install rclone
 rclone/install: RCLONE_VERSION ?= latest
