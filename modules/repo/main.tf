@@ -14,8 +14,6 @@ locals {
     "RCLONE_CONFIG_SALT_PROVIDER=Other",
     "RCLONE_CONFIG_SALT_ENV_AUTH=false",
     "RCLONE_CONFIG_SALT_ENDPOINT=%s", # %s is repo.salt_s3_endpoint
-    "RCLONE_CONFIG_S3_TYPE=s3",
-    "RCLONE_CONFIG_S3_ENV_AUTH=true",
     "rclone sync",
     "--delete-excluded --use-server-modtime --update --fast-list -v",
     "--filter '- **/{i386,i686,SRPMS}/**'",
@@ -26,16 +24,16 @@ locals {
   rclone_python2 = concat(
     local.rclone_base,
     [
-      "salt:s3/yum",             # rclone source
-      "s3:${var.bucket_name}/%s" # rclone target, %s is repo.repo_prefix_python2
+      "salt:s3/yum",                            # rclone source
+      ":s3,env_auth=true:${var.bucket_name}/%s" # rclone target, %s is repo.repo_prefix_python2
     ]
   )
 
   rclone_python3 = concat(
     local.rclone_base,
     [
-      "salt:s3/py3",             # rclone source
-      "s3:${var.bucket_name}/%s" # rclone target, %s is repo.repo_prefix_python3
+      "salt:s3/py3",                            # rclone source
+      ":s3,env_auth=true:${var.bucket_name}/%s" # rclone target, %s is repo.repo_prefix_python3
     ]
   )
 }
