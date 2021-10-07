@@ -17,6 +17,18 @@ terraform apply -var bucket_name=<BUCKET> -var salt_versions='["SALT_VERSION"]' 
     the credential.
 2.  `rclone` must be installed and available and in the PATH.
 
+## Testing
+
+At the moment, testing is manual:
+
+```
+make rclone/install
+
+# Replace "xxx" with an actual AWS profile, then execute the integration tests.
+export AWS_PROFILE=xxx 
+make terraform/pytest PYTEST_ARGS="-v --nomock"
+```
+
 ## Submodules
 
 *   `repo` - Uses `rclone` to create a copy of the salt yum repo for the salt
