@@ -19,7 +19,7 @@ terraform apply -var bucket_name=<BUCKET> -var salt_versions='["SALT_VERSION"]' 
 
 ## Testing
 
-At the moment, testing is manual:
+For manual testing:
 
 ```
 make rclone/install
@@ -27,6 +27,12 @@ make rclone/install
 # Replace "xxx" with an actual AWS profile, then execute the integration tests.
 export AWS_PROFILE=xxx 
 make terraform/pytest PYTEST_ARGS="-v --nomock"
+```
+
+For automated testing, the PYTEST_ARGS is optional and no profile is needed:
+
+```
+make terraform/pytest PYTEST_ARGS="-v"
 ```
 
 ## Submodules
