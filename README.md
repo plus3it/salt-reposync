@@ -32,7 +32,9 @@ make terraform/pytest PYTEST_ARGS="-v --nomock"
 For automated testing, the PYTEST_ARGS is optional and no profile is needed:
 
 ```
+make mockstack/up
 make terraform/pytest PYTEST_ARGS="-v"
+make mockstack/clean
 ```
 
 ## Submodules
