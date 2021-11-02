@@ -15,7 +15,7 @@ terraform apply -var bucket_name=<BUCKET> -var salt_versions='["SALT_VERSION"]' 
 1.  An AWS credential with get/put permissions to the S3 bucket must be pre-
     configured. Any method supported by the `aws` CLI may be used to configure
     the credential.
-2.  `rclone` must be installed and available and in the PATH.
+2.  `rclone` >= 1.57.0 must be installed and available and in the PATH.
 
 ## Testing
 
