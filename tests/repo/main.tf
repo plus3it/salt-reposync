@@ -14,14 +14,13 @@ module "repo" {
       salt_versions    = local.salt_versions
       repo_prefix      = local.repo_prefix
     },
-    # Commented out because this endpoint is currently broken
-    # {
-    #   # Test using cloudfront endpoint for archive repo
-    #   salt_s3_bucket   = local.salt_s3_bucket
-    #   salt_s3_endpoint = local.salt_s3_endpoint_archive
-    #   salt_versions    = local.salt_versions_archive
-    #   repo_prefix      = local.repo_prefix_archive
-    # },
+    {
+      # Test using cloudfront endpoint for archive repo
+      salt_s3_bucket   = local.salt_s3_bucket
+      salt_s3_endpoint = local.salt_s3_endpoint_archive
+      salt_versions    = local.salt_versions_archive
+      repo_prefix      = local.repo_prefix_archive
+    },
     {
       # Test using the underlying archive bucket directly, instead of cloudfront
       salt_s3_bucket   = "archive-repo-saltstack-com"
