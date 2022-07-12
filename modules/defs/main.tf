@@ -39,7 +39,7 @@ locals {
   ])
 }
 
-resource "aws_s3_bucket_object" "this" {
+resource "aws_s3_object" "this" {
   for_each = { for repo_def in local.repo_defs : repo_def.key => repo_def.content }
 
   bucket       = var.bucket_name
