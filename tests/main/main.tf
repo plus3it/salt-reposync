@@ -51,7 +51,8 @@ locals {
   yum_prefix               = "defs/"
 
   salt_versions = [
-    "3004.2",
+    "3005.1-4",
+    "3005.1",
   ]
 
   salt_versions_archive = [
