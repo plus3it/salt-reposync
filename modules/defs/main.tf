@@ -10,13 +10,13 @@ locals {
 
 locals {
   repo_paths = {
-    amzn2-onedir  = "onedir/amazon/2/$basearch/archive"
+    amzn2-onedir  = "onedir/amazon/2/$basearch/minor"
     amzn2-python3 = "python3/amazon/2/$basearch/archive"
-    el7-onedir    = "onedir/redhat/7/$basearch/archive"
+    el7-onedir    = "onedir/redhat/7/$basearch/minor"
     el7-python3   = "python3/redhat/7/$basearch/archive"
-    el8-onedir    = "onedir/redhat/8/$basearch/archive"
+    el8-onedir    = "onedir/redhat/8/$basearch/minor"
     el8-python3   = "python3/redhat/8/$basearch/archive"
-    el9-onedir    = "onedir/redhat/9/$basearch/archive"
+    el9-onedir    = "onedir/redhat/9/$basearch/minor"
   }
 
   repo_defs = flatten([
