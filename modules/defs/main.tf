@@ -29,7 +29,7 @@ locals {
             {
               name    = "salt-reposync-${platform}"
               baseurl = "${repo.repo_endpoint}/${repo_path}/${version}"
-              gpgkey  = "${repo.repo_endpoint}/${repo_path}/${version}/SALTSTACK-GPG-KEY.pub"
+              gpgkey  = "${repo.repo_endpoint}/${repo_path}/${version}/${tonumber(substr(version, 0, 4)) >= 3006 ? "SALT-PROJECT-GPG-PUBKEY-2023.pub" : "SALTSTACK-GPG-KEY.pub"}"
             }
           )
         }
