@@ -12,5 +12,7 @@ variable "repos" {
     repo_prefix   = string
     salt_versions = list(string)
     yum_prefix    = string
+
+    repo_gpgkey_filename = optional(string, "SaltProjectKey.gpg.pub")
   }))
 }
