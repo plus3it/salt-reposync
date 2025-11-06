@@ -11,9 +11,8 @@ locals {
     if repo.repo_type == "s3"
   ]
 
-  webdav_repos = [
-    for repo in var.repos : {
-      id                   = "${repo.salt_webdav_url}:${repo.repo_prefix}"
+  webdav_repos = {
+    for repo in var.repos : "${repo.salt_webdav_url}:${repo.repo_prefix}" => {
       repo_gpgkey_filename = repo.repo_gpgkey_filename
       repo_prefix_onedir   = "${trim(repo.repo_prefix, "/")}/onedir"
       repo_prefix_python3  = "${trim(repo.repo_prefix, "/")}/python3"
@@ -22,7 +21,7 @@ locals {
       salt_versions        = formatlist("--filter '+ *%s*'", sort(repo.salt_versions))
     }
     if repo.repo_type == "webdav"
-  ]
+  }
 
   rclone_s3_base = [
     "RCLONE_CONFIG_SALT_TYPE=s3",
@@ -123,7 +122,7 @@ resource "null_resource" "sync_s3_python3" {
 }
 
 resource "terraform_data" "sync_webdav_onedir" {
-  for_each = { for repo in local.webdav_repos : repo.id => repo }
+  for_each = local.webdav_repos
 
   provisioner "local-exec" {
     command = format(
@@ -145,13 +144,14 @@ resource "terraform_data" "sync_webdav_onedir" {
 }
 
 resource "terraform_data" "gpgkey_webdav_onedir" {
-  for_each = { for repo in local.webdav_repos : repo.id => repo if repo.salt_gpgkey_url != null }
+  for_each = { for id, repo in terraform_data.sync_webdav_onedir : id => local.webdav_repos[id] if local.webdav_repos[id].salt_gpgkey_url != null }
 
   provisioner "local-exec" {
     command = "rclone copyurl -v ${each.value.salt_gpgkey_url} :s3,provider=AWS,env_auth=true:${var.bucket_name}/${each.value.repo_prefix_onedir}/${each.value.repo_gpgkey_filename}"
   }
 
   triggers_replace = [
-    "rclone copyurl -v ${each.value.salt_gpgkey_url} :s3,provider=AWS,env_auth=true:${var.bucket_name}/${each.value.repo_prefix_onedir}/${each.value.repo_gpgkey_filename}"
+    "rclone copyurl -v ${each.value.salt_gpgkey_url} :s3,provider=AWS,env_auth=true:${var.bucket_name}/${each.value.repo_prefix_onedir}/${each.value.repo_gpgkey_filename}",
+    join(" ", each.value.salt_versions),
   ]
 }
