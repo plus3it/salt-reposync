@@ -1,14 +1,54 @@
 # salt-reposync
-Pull salt packages for specific salt versions from an s3-hosted yum repo and
-push them to S3.
+Mirror salt packages for specific salt versions from an upstream yum repo to an
+S3 bucket, and create yum repo definition files for those versions in the same
+bucket.
 
 ## Usage
 
+Set `bucket_name`, `repo_endpoint`, and `repos` in a `.tfvars` file. Each object
+in `repos` selects one upstream repo and the salt versions to mirror from it.
+
 ```
 terraform init
-terraform plan -var bucket_name=<BUCKET> -var salt_versions='["SALT_VERSION"]' -out tfplan
-terraform apply -var bucket_name=<BUCKET> -var salt_versions='["SALT_VERSION"]' tfplan
+terraform plan -var-file=salt-reposync.tfvars -out tfplan
+terraform apply tfplan
 ```
+
+Example `salt-reposync.tfvars`:
+
+```
+bucket_name   = "my-salt-repo-bucket"
+repo_endpoint = "https://repo.example.com"
+
+repos = [
+  {
+    repo_type       = "webdav"
+    salt_webdav_url = "https://packages.broadcom.com/artifactory/"
+    salt_gpgkey_url = "https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public"
+    salt_versions   = ["3006.9"]
+    repo_prefix     = "repo/salt/"
+    yum_prefix      = "yum/salt/"
+  },
+]
+```
+
+Each object in `repos` supports these settings:
+
+*   `repo_type` - Either `s3` (the default) or `webdav`.
+    *   For `s3`, set `salt_s3_bucket` and `salt_s3_endpoint` to the upstream
+        S3 bucket and endpoint.
+    *   For `webdav`, set `salt_webdav_url` to the upstream WebDAV URL. The
+        module syncs the `saltproject-rpm/` path under that URL. Set
+        `salt_gpgkey_url` to also copy the GPG key into the mirror.
+*   `salt_versions` - The salt versions to mirror.
+*   `repo_prefix` - The S3 key prefix where the repo is mirrored.
+*   `yum_prefix` - The S3 key prefix for the yum repo definition files.
+*   `repo_gpgkey_filename` - The file name of the GPG key. The default is
+    `SaltProjectKey.gpg.pub`.
+
+For `webdav` repos, `salt_gpgkey_url` is copied to
+`<repo_prefix>/onedir/<repo_gpgkey_filename>`. The yum repo definition files use
+that file as the `gpgkey`. The module does not copy a GPG key for `s3` repos.
 
 ## Prerequisites
 
@@ -32,10 +72,10 @@ make terraform/pytest PYTEST_ARGS="-v --nomock"
 ## Submodules
 
 *   `repo` - Uses `rclone` to create a copy of the salt yum repo for the salt
-    versions specified by `var.salt_versions`.
+    versions specified by `salt_versions` in each object of `var.repos`.
 
-*   `defs` - Creates yum repo definition files for all `var.salt_versions` in 
-    the S3 bucket specified by `var.bucket_name`.
+*   `defs` - Creates yum repo definition files for the `salt_versions` of each
+    object in `var.repos`, in the S3 bucket specified by `var.bucket_name`.
 
 <!-- BEGIN TFDOCS -->
 ## Requirements
